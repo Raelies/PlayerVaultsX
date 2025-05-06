@@ -1,26 +1,32 @@
-name: Build Jar
+name: Java CI with Maven
 
-on: [ push ]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
-    name: Build
     runs-on: ubuntu-latest
-    if: "github.actor != 'dependabot[bot]'"
+
     steps:
-      - uses: actions/checkout@main
-      - name: Set up JDK 17
-        uses: actions/setup-java@main
-        with:
-          java-version: 17
-          distribution: temurin
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Build
-        run: mvn -V -B clean package --file pom.xml
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: Plugin JAR
-          path: target/*.jar
-          if-no-files-found: error
+    - name: Build with Maven
+      run: mvn clean install
+
+    - name: Upload JAR file
+      uses: actions/upload-artifact@v4
+      with:
+        name: BetterFortune
+        path: target/*.jar
